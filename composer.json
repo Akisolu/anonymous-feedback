@@ -1,0 +1,28 @@
+{
+    "name": "akisolu/anonymous-feedback",
+    "description": "A web system that allows users to send feedback anonymously and the administrator to view it.",
+    "type": "project",
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "Akisolu\\AnonymousFeedback\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Akisolu",
+            "email": "morillomiguel2707@gmail.com"
+        }
+    ],
+    "require-dev": {
+        "phpunit/phpunit": "^13.2"
+    },
+    "require": {
+        "nikic/fast-route": "^1.3",
+        "symfony/http-foundation": "^6.3",
+        "php-di/php-di": "^7.0",
+        "illuminate/database": "^10.0",
+        "predis/predis": "^2.2",
+        "vlucas/phpdotenv": "^5.5"
+    }
+}
