@@ -12,9 +12,5 @@ else
 echo "Composer is already installed."
 fi
 
-echo "=== Initializing Composer and installing PHPUnit ==="
-if [ ! -f "composer.json" ]; then 
-composer init --no-interaction
-fi
-
-composer require --dev phpunit/phpunit
+echo "=== Installing project dependencies (includes PHPUnit) ==="
+composer install
