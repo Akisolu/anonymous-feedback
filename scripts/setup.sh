@@ -2,7 +2,7 @@
 set -e
 
 echo "=== Installing system dependencies ==="
-sudo apt install -y php-cli php-xml php-mbstring php-pgsql php-curl unzip curl postgresql postgresql-contrib
+sudo apt install -y php-cli php-xml php-mbstring php-pgsql php-curl unzip curl postgresql postgresql-contrib redis-server
 
 echo "=== Installing Composer ==="
 if ! command -v composer &> /dev/null; then 
