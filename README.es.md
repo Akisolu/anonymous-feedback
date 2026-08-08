@@ -6,6 +6,10 @@ Plataforma web para enviar, almacenar y gestionar comentarios anónimos. Está d
 
 El proyecto permite a cualquier usuario no autenticado enviar feedback de forma anónima. El administrador (`Owner`) accede a un panel seguro para revisar mensajes, cambiar estados y administrar los registros. El sistema no guarda IP en texto plano y utiliza Redis para un rate limiting temporal de envíos.
 
+> [!NOTE]
+> 🚧 **En desarrollo**
+Este proyecto se encuentra actualmente en una fase activa de desarrollo y refactorización. La arquitectura base, los esquemas de PostgreSQL/Redis y los diagramas de flujo ya están estructurados, pero el código fuente completo se actualiza periódicamente.
+
 ## 🧩 Tecnologías usadas
 
 - PHP 8.1+

@@ -6,6 +6,10 @@ Web platform for sending, storing, and managing anonymous comments. It is built 
 
 The project allows any unauthenticated user to submit feedback anonymously. The administrator (`Owner`) accesses a secure dashboard to review messages, change statuses, and manage records. The system does not store IP addresses in plain text and uses Redis for temporary submission rate limiting.
 
+> [!NOTE]
+> 🚧 **Work in Progress**  
+> This project is currently in an active development and refactoring phase. The base architecture, PostgreSQL/Redis schemas, and flowcharts are already structured, but the complete source code continues to receive regular updates.
+
 ## 🧩 Technologies used
 
 - PHP 8.1+
