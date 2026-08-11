@@ -85,6 +85,9 @@ jobs:
           echo "REDIS_PORT=6379" >> .env
           echo "RATE_LIMIT_MAX_REQUESTS=10" >> .env
           echo "RATE_LIMIT_DECAY=600" >> .env
-          
+
+      - name: Run Database Migrations
+        run: php bin/migrate.php
+
       - name: Run PHPUnit Tests
         run: vendor/bin/phpunit

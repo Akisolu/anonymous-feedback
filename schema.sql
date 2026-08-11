@@ -15,7 +15,7 @@ CREATE TABLE IF NOT EXISTS states (
 CREATE TABLE IF NOT EXISTS feedbacks (
     feedback_id SERIAL PRIMARY KEY,
     message TEXT NOT NULL,
-    state_id INT NOT NULL,
+    state_id INT NOT NULL DEFAULT 1,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
@@ -95,4 +95,13 @@ VALUES
     ('read'),
     ('archived'),
     ('deleted')
-ON CONFLICT (state_id) DO NOTHING;
+ON CONFLICT (name) DO NOTHING;
+
+INSERT INTO users (user_id, username, password_hash)
+VALUES (1, 'system', '$2y$10$e.g.placeholder.hash.system.user')
+ON CONFLICT (user_id) DO NOTHING;
+
+-- 5. INDEX
+
+CREATE INDEX IF NOT EXISTS idx_feedbacks_state_id ON feedbacks(state_id);
+CREATE INDEX IF NOT EXISTS idx_feedback_records_feedback_id ON feedback_records(feedback_id);
