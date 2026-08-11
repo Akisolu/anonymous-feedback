@@ -7,6 +7,8 @@ use Psr\Container\ContainerInterface;
 use Illuminate\Database\Capsule\Manager as Capsule;
 use Predis\Client as RedisClient;
 
+use Akisolu\AnonymousFeedback\Services\RateLimiter;
+
 $config = require __DIR__ . '/config.php';
 
 $builder = new ContainerBuilder();
@@ -32,7 +34,10 @@ $builder->addDefinitions([
     },
     RedisClient::class => function (ContainerInterface $c) {
         return new RedisClient($c->get('config')['redis']);
-    }
+    },
+    RateLimiter::class => function (ContainerInterface $c) {
+        return new RateLimiter($c->get(RedisClient::class));
+    },
 ]);
 
 return $builder->build();
