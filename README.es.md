@@ -32,7 +32,7 @@ Este proyecto se encuentra actualmente en una fase activa de desarrollo y refact
 
 Asegúrate de tener instaladas las siguientes dependencias de sistema y PHP:
 
-- PHP `>= 8.1` con extensiones: `pdo_pgsql`, `redis`, `mbstring`, `json`, `xml`
+- PHP `>= 8.4` con extensiones: `pdo_pgsql`, `redis`, `mbstring`, `json`, `xml`
 - Composer `>= 2.0`
 - PostgreSQL `>= 13`
 - Redis Server `>= 6.0`

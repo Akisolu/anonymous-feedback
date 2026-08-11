@@ -32,7 +32,7 @@ The project allows any unauthenticated user to submit feedback anonymously. The 
 
 Make sure the following system and PHP dependencies are installed:
 
-- PHP `>= 8.1` with extensions: `pdo_pgsql`, `redis`, `mbstring`, `json`, `xml`
+- PHP `>= 8.4` with extensions: `pdo_pgsql`, `redis`, `mbstring`, `json`, `xml`
 - Composer `>= 2.0`
 - PostgreSQL `>= 13`
 - Redis Server `>= 6.0`
