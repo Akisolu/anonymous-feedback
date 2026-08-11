@@ -15,7 +15,7 @@ CREATE TABLE IF NOT EXISTS states (
 CREATE TABLE IF NOT EXISTS feedbacks (
     feedback_id SERIAL PRIMARY KEY,
     message TEXT NOT NULL,
-    state_id INT NOT NULL,
+    state_id INT NOT NULL DEFAULT 1,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
@@ -95,4 +95,4 @@ VALUES
     ('read'),
     ('archived'),
     ('deleted')
-ON CONFLICT (state_id) DO NOTHING;
+ON CONFLICT (id_state) DO NOTHING;
