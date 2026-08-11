@@ -95,4 +95,4 @@ VALUES
     ('read'),
     ('archived'),
     ('deleted')
-ON CONFLICT (id_state) DO NOTHING;
+ON CONFLICT (name) DO NOTHING;
