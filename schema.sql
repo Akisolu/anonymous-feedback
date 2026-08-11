@@ -13,7 +13,7 @@ CREATE TABLE IF NOT EXISTS states (
 );
 
 CREATE TABLE IF NOT EXISTS feedbacks (
-    feedback_id SERIAL PRIMARY KEY,
+    feedback_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     message TEXT NOT NULL,
     state_id INT NOT NULL DEFAULT 1,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
@@ -96,3 +96,8 @@ VALUES
     ('archived'),
     ('deleted')
 ON CONFLICT (name) DO NOTHING;
+
+-- 5. INDEX
+
+CREATE INDEX IF NOT EXISTS idx_feedbacks_state_id ON feedbacks(state_id);
+CREATE INDEX IF NOT EXISTS idx_feedback_records_feedback_id ON feedback_records(feedback_id);
