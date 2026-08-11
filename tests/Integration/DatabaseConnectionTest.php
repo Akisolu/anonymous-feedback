@@ -62,4 +62,16 @@ class DatabaseConnectionTest extends TestCase
 
         $redis->del([$testKey]);
     }
+    
+    public function testRateLimiterCanBeResolvedFromContainer(): void
+{
+    /** @var \Akisolu\AnonymousFeedback\Services\RateLimiter $rateLimiter */
+    $rateLimiter = $this->container->get(\Akisolu\AnonymousFeedback\Services\RateLimiter::class);
+
+    $this->assertInstanceOf(\Akisolu\AnonymousFeedback\Services\RateLimiter::class, $rateLimiter);
+
+    // Verificación rápida de estado
+    $testKey = 'container_test_key_' . uniqid();
+    $this->assertFalse($rateLimiter->tooManyAttempts($testKey, 5));
+}
 }

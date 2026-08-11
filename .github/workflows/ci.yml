@@ -1,0 +1,90 @@
+name: CI Suite
+
+on:
+  push:
+    branches: [ main, master, "feature/*" ]
+  pull_request:
+    branches: [ main, master ]
+
+jobs:
+  phpunit:
+    name: PHPUnit Tests (PHP ${{ matrix.php-version }})
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        php-version: ['8.4']
+
+    services:
+      postgres:
+        image: postgres:15-alpine
+        env:
+          POSTGRES_DB: feedback
+          POSTGRES_USER: feedback_user
+          POSTGRES_PASSWORD: password123
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+      redis:
+        image: redis:7-alpine
+        ports:
+          - 6379:6379
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php-version }}
+          extensions: pdo, pdo_pgsql, mbstring, ctype, iconv
+          coverage: none
+
+      - name: Get Composer Cache Directory
+        id: composer-cache
+        run: echo "dir=$(composer config cache-files-dir)" >> $GITHUB_OUTPUT
+
+      - name: Cache Composer Dependencies
+        uses: actions/cache@v4
+        with:
+          path: ${{ steps.composer-cache.outputs.dir }}
+          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-composer-
+
+      - name: Install Dependencies
+        run: composer install --prefer-dist --no-progress --no-interaction
+
+      - name: Create .env file for Testing
+        run: |
+          echo "APP_NAME=\"Anonymous Feedback System\"" > .env
+          echo "APP_ENV=testing" >> .env
+          echo "APP_DEBUG=true" >> .env
+          echo "APP_URL=http://localhost:8000" >> .env
+          echo "DB_DRIVER=pgsql" >> .env
+          echo "DB_HOST=127.0.0.1" >> .env
+          echo "DB_PORT=5432" >> .env
+          echo "DB_DATABASE=feedback" >> .env
+          echo "DB_USERNAME=feedback_user" >> .env
+          echo "DB_PASSWORD=password123" >> .env
+          echo "DB_CHARSET=utf8" >> .env
+          echo "DB_SCHEMA=public" >> .env
+          echo "REDIS_SCHEME=tcp" >> .env
+          echo "REDIS_HOST=127.0.0.1" >> .env
+          echo "REDIS_PORT=6379" >> .env
+          echo "RATE_LIMIT_MAX_REQUESTS=10" >> .env
+          echo "RATE_LIMIT_DECAY=600" >> .env
+          
+      - name: Run PHPUnit Tests
+        run: vendor/bin/phpunit
