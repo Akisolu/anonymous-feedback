@@ -8,7 +8,6 @@
          failOnRisky="true"
          failOnWarning="true">
          
-    <!-- Suites de Pruebas -->
     <testsuites>
         <testsuite name="Unit">
             <directory>tests/Unit</directory>
@@ -18,14 +17,12 @@
         </testsuite>
     </testsuites>
 
-    <!-- Cobertura de Código: Indica qué analizar en src/ -->
     <source>
         <include>
             <directory suffix=".php">src</directory>
         </include>
     </source>
 
-    <!-- Variables de entorno específicas para testing (opcional) -->
     <php>
         <env name="APP_ENV" value="testing"/>
         <env name="APP_DEBUG" value="true"/>
