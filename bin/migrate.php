@@ -15,26 +15,26 @@ $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 $sqlPath = __DIR__ . '/../schema.sql';
 
 if (!file_exists($sqlPath)) {
-    echo "\033[31m[ERROR] No se encontró el archivo de migración en: {$sqlPath}\033[0m\n";
+    echo "\033[31m[ERROR] The migration file was not found in: {$sqlPath}\033[0m\n";
     exit(1);
 }
 
-echo "\033[33mEjecutando migración en PostgreSQL...\033[0m\n";
+echo "\033[33mRunning migration in PostgreSQL...\033[0m\n";
 
 try {
     $sql = file_get_contents($sqlPath);
     
-    // Ejecutar el SQL completo dentro de una transacción explícita
+    // Execute the complete SQL within an explicit transaction
     $pdo->beginTransaction();
     $pdo->exec($sql);
     $pdo->commit();
 
-    echo "\033[32m[ÉXITO] ¡Todas las tablas, índices, triggers y registros iniciales fueron creados exitosamente!\033[0m\n";
+    echo "\033[32m[SUCCESS] All tables, indexes, triggers, and initial records were successfully created!\033[0m\n";
 } catch (\PDOException $e) {
     if ($pdo->inTransaction()) {
         $pdo->rollBack();
     }
-    echo "\033[31m[ERROR EN LA MIGRACIÓN]\033[0m\n";
-    echo "Mensaje: " . $e->getMessage() . "\n";
+    echo "\033[31m[MIGRATION ERROR]\033[0m\n";
+    echo "Message: " . $e->getMessage() . "\n";
     exit(1);
 }
