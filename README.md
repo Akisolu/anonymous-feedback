@@ -76,8 +76,27 @@ DATABASE_PASSWORD=
 DATABASE_PORT=
 REDIS_PORT=
 ```
+## 🧪 Installation with Docker (Recommended)
+1. Install Composer:
+```bash
+curl -sS https://getcomposer.org/installer | php 
+sudo mv composer.phar /usr/local/bin/composer
+```
 
-## 🧪 Quick installation
+2. Install Docker and Docker Compose.
+> [!NOTE]
+> 🚧 **Docker installation**  
+> Docker installation may vary depending on the operating system; I recommend researching the steps for your OS.
+
+3. Build and start the containers:
+
+```bash
+docker-compose up --build -d
+```
+
+4. Access the application at `http://localhost:8000` and the PostgreSQL database at `docker compose exec db psql -U feedback_user -d feedback`.
+
+## 🧪 Installation locally (without Docker)
 
 1. Install system dependencies (the `scripts/setup.sh` script installs common Debian/Ubuntu packages):
 
@@ -91,7 +110,7 @@ bash scripts/setup.sh
 composer install
 ```
 
-## 🗄️ PostgreSQL Setup Guide
+## 🗄️ PostgreSQL Setup Guide (Not required with Docker installation)
 
 ### 1. Create Database and User
 
@@ -167,7 +186,7 @@ Enter the Redis CLI:
 bash scripts/redis.sh --cli
 ```
 
-## 🧭 Usage
+## 🧭 Usage (Do not use with Docker installation)
 
 1. Start PostgreSQL:
 
