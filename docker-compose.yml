@@ -12,7 +12,7 @@ services:
       - "5432:5432"
     volumes:
       - pgdata:/var/lib/postgresql/data
-      # Monta la estructura e inserciones iniciales para ejecutarlas en el primer arranque
+      # Mount the structure and initial data for execution on the first startup
       - ./schema.sql:/docker-entrypoint-initdb.d/1_schema.sql:ro
       - ./seed.sql:/docker-entrypoint-initdb.d/2_seed.sql:ro
 
