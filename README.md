@@ -13,7 +13,7 @@ The project allows any unauthenticated user to submit feedback anonymously. The 
 ## 🧩 Technologies used
 
 - PHP 8.4.1+
-- PostgreSQL 13+
+- PostgreSQL 15+
 - Redis 6+
 - Composer
 - PHPUnit
@@ -34,7 +34,7 @@ Make sure the following system and PHP dependencies are installed:
 
 - PHP `>= 8.4.1` with extensions: `pdo_pgsql`, `redis`, `mbstring`, `json`, `xml`
 - Composer `>= 2.0`
-- PostgreSQL `>= 13`
+- PostgreSQL `>= 15`
 - Redis Server `>= 6.0`
 - `php-cli`, `php-xml`, `php-mbstring`, `php-pgsql`, `php-curl`
 - `unzip`, `curl`, `postgresql-contrib`, `redis-server`
