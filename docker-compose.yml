@@ -1,0 +1,43 @@
+services:
+  # 1. Database PostgreSQL
+  db:
+    image: postgres:16-alpine
+    container_name: feedback_db
+    restart: always
+    environment:
+      POSTGRES_DB: feedback
+      POSTGRES_USER: feedback_user
+      POSTGRES_PASSWORD: secure_password_here
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      # Monta la estructura e inserciones iniciales para ejecutarlas en el primer arranque
+      - ./schema.sql:/docker-entrypoint-initdb.d/1_schema.sql:ro
+      - ./seed.sql:/docker-entrypoint-initdb.d/2_seed.sql:ro
+
+  # 2. Server Redis
+  redis:
+    image: redis:alpine
+    container_name: feedback_redis
+    restart: always
+    ports:
+      - "6379:6379"
+
+  # 3. Server PHP
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: feedback_app
+    ports:
+      - "8000:8000"
+    volumes:
+      - .:/var/www/html # sync your local code with the container in real-time
+    depends_on:
+      - db
+      - redis
+
+# Define named volumes for persistent storage
+volumes:
+  pgdata:
