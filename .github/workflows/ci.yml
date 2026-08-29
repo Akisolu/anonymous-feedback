@@ -13,7 +13,7 @@ jobs:
 
     strategy:
       matrix:
-        php-version: ['8.4.1']
+        php-version: ['8.4']
 
     services:
       postgres:
@@ -48,7 +48,7 @@ jobs:
         uses: shivammathur/setup-php@v2
         with:
           php-version: ${{ matrix.php-version }}
-          extensions: pdo, pdo_pgsql, mbstring, ctype, iconv
+          extensions: pdo, pdo_pgsql, redis, mbstring, ctype, iconv, zip
           coverage: none
 
       - name: Get Composer Cache Directory
@@ -68,23 +68,31 @@ jobs:
 
       - name: Create .env file for Testing
         run: |
-          echo "APP_NAME=\"Anonymous Feedback System\"" > .env
-          echo "APP_ENV=testing" >> .env
-          echo "APP_DEBUG=true" >> .env
-          echo "APP_URL=http://localhost:8000" >> .env
-          echo "DB_DRIVER=pgsql" >> .env
-          echo "DB_HOST=127.0.0.1" >> .env
-          echo "DB_PORT=5432" >> .env
-          echo "DB_DATABASE=feedback" >> .env
-          echo "DB_USERNAME=feedback_user" >> .env
-          echo "DB_PASSWORD=password123" >> .env
-          echo "DB_CHARSET=utf8" >> .env
-          echo "DB_SCHEMA=public" >> .env
-          echo "REDIS_SCHEME=tcp" >> .env
-          echo "REDIS_HOST=127.0.0.1" >> .env
-          echo "REDIS_PORT=6379" >> .env
-          echo "RATE_LIMIT_MAX_REQUESTS=10" >> .env
-          echo "RATE_LIMIT_DECAY=600" >> .env
+          cat <<EOF > .env
+          APP_NAME="Anonymous Feedback System"
+          APP_ENV=testing
+          APP_DEBUG=true
+          APP_URL=http://localhost:8000
+          DB_DRIVER=pgsql
+          DB_HOST=127.0.0.1
+          DB_PORT=5432
+          DB_DATABASE=feedback
+          DB_USERNAME=feedback_user
+          DB_PASSWORD=password123
+          DB_CHARSET=utf8
+          DB_SCHEMA=public
+          REDIS_SCHEME=tcp
+          REDIS_HOST=127.0.0.1
+          REDIS_PORT=6379
+          RATE_LIMIT_MAX_REQUESTS=10
+          RATE_LIMIT_DECAY=600
+          EOF
+
+      - name: Grant Schema Permissions on PostgreSQL 15
+        env:
+          PGPASSWORD: password123
+        run: |
+          psql -h 127.0.0.1 -U feedback_user -d feedback -c "GRANT ALL ON SCHEMA public TO feedback_user;"
 
       - name: Run Database Migrations
         run: php bin/migrate.php
