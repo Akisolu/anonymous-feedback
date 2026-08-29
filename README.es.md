@@ -12,8 +12,8 @@ Este proyecto se encuentra actualmente en una fase activa de desarrollo y refact
 
 ## 🧩 Tecnologías usadas
 
-- PHP 8.1+
-- PostgreSQL 13+
+- PHP 8.4.1+
+- PostgreSQL 15+
 - Redis 6+
 - Composer
 - PHPUnit
@@ -32,9 +32,9 @@ Este proyecto se encuentra actualmente en una fase activa de desarrollo y refact
 
 Asegúrate de tener instaladas las siguientes dependencias de sistema y PHP:
 
-- PHP `>= 8.4` con extensiones: `pdo_pgsql`, `redis`, `mbstring`, `json`, `xml`
+- PHP `>= 8.4.1` con extensiones: `pdo_pgsql`, `redis`, `mbstring`, `json`, `xml`
 - Composer `>= 2.0`
-- PostgreSQL `>= 13`
+- PostgreSQL `>= 15`
 - Redis Server `>= 6.0`
 - `php-cli`, `php-xml`, `php-mbstring`, `php-pgsql`, `php-curl`
 - `unzip`, `curl`, `postgresql-contrib`, `redis-server`
@@ -91,46 +91,56 @@ bash scripts/setup.sh
 composer install
 ```
 
-## 🗄️ Configuración de PostgreSQL
+## 🗄️ Guía de configuración de PostgreSQL
 
-### 1. Crear la base de datos y el usuario
+### 1. Crear base de datos y usuario
 
-Accede a PostgreSQL como superusuario:
+Acceda a PostgreSQL como superusuario:
 
 ```bash
 sudo -u postgres psql
 ```
 
-Crea la base de datos y el usuario de aplicación:
+Cree la base de datos y el usuario de la aplicación:
 
 ```sql
-CREATE DATABASE <nombre_de_base_de_datos>;
-CREATE USER <usuario_de_base_de_datos> WITH PASSWORD '<contraseña_segura>';
+CREATE DATABASE <nombre_de_la_base_de_datos>;
+CREATE USER <usuario_de_la_base_de_datos> WITH PASSWORD '<contraseña_segura>';
 ```
 
-### 2. Conceder permisos
+### 2. Otorgar permisos
+
+Conéctese a la base de datos recién creada:
 
 ```sql
-GRANT CONNECT ON DATABASE <nombre_de_base_de_datos> TO <usuario_de_base_de_datos>;
-GRANT USAGE ON SCHEMA public TO <usuario_de_base_de_datos>;
-GRANT SELECT, INSERT, UPDATE, DELETE ON ALL TABLES IN SCHEMA public TO <usuario_de_base_de_datos>;
-GRANT USAGE, SELECT ON ALL SEQUENCES IN SCHEMA public TO <usuario_de_base_de_datos>;
-ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT SELECT, INSERT, UPDATE, DELETE ON TABLES TO <usuario_de_base_de_datos>;
-ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT USAGE, SELECT ON ALL SEQUENCES TO <usuario_de_base_de_datos>;
+\c <nombre_de_la_base_de_datos>
 ```
 
-### 3. Ejecutar el esquema y datos iniciales
+Otorgue los permisos de esquema necesarios y los privilegios predeterminados:
 
-Conecta a la base de datos y aplica el esquema:
+```sql
+-- Otorgar permisos para la creación y el uso del esquema (Requerido para PostgreSQL 15+)
+GRANT ALL ON SCHEMA public TO <usuario_de_la_base_de_datos>;
+GRANT CONNECT ON DATABASE <nombre_de_la_base_de_datos> TO <usuario_de_la_base_de_datos>; GRANT USAGE, CREATE ON SCHEMA public TO <usuario_base_de_datos>;
 
-```bash
-psql -h 127.0.0.1 -U <usuario_de_base_de_datos> -d <nombre_de_base_de_datos> -f schema.sql
+-- Otorgar privilegios DML sobre objetos existentes
+GRANT SELECT, INSERT, UPDATE, DELETE ON ALL TABLES IN SCHEMA public TO <usuario_base_de_datos>;
+GRANT USAGE, SELECT ON ALL SEQUENCES IN SCHEMA public TO <usuario_base_de_datos>;
+
+-- Establecer privilegios predeterminados para tablas y secuencias futuras
+ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT SELECT, INSERT, UPDATE, DELETE ON TABLES TO <usuario_base_de_datos>;
+ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT USAGE, SELECT ON SEQUENCES TO <usuario_base_de_datos>;
 ```
 
-Si deseas precargar datos iniciales:
+*(Alternativa opcional: `ALTER SCHEMA public OWNER TO <usuario_base_de_datos>;`)*
+
+### 3. Aplicar esquema y datos iniciales
+
+Ejecutar las migraciones de la base de datos y los archivos de inicialización mediante el enlace de host TCP (`-h 127.0.0.1`) para aplicar la autenticación por contraseña:
 
 ```bash
-psql -h 127.0.0.1 -U <usuario_de_base_de_datos> -d <nombre_de_base_de_datos> -f seed.sql
+psql -h 127.0.0.1 -U <usuario_base_de_datos> -d <nombre_base_de_datos> -f schema.sql
+psql -h 127.0.0.1 -U <usuario_base_de_datos> -d <nombre_base_de_datos> -f seed.sql
 ```
 
 ## 🔥 Configuración de Redis

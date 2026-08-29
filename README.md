@@ -91,9 +91,9 @@ bash scripts/setup.sh
 composer install
 ```
 
-## 🗄️ PostgreSQL configuration
+## 🗄️ PostgreSQL Setup Guide
 
-### 1. Create the database and the user
+### 1. Create Database and User
 
 Access PostgreSQL as the superuser:
 
@@ -101,37 +101,49 @@ Access PostgreSQL as the superuser:
 sudo -u postgres psql
 ```
 
-Create the database and application user:
+Create the application database and user:
 
 ```sql
-CREATE DATABASE <database_name>;
-CREATE USER <database_user> WITH PASSWORD '<secure_password>';
+CREATE DATABASE <database-name>;
+CREATE USER <database_user> WITH PASSWORD 'secure_password_here';
 ```
 
-### 2. Grant permissions
+### 2. Grant Permissions
+
+Connect to the newly created database:
 
 ```sql
+\c <database_name>
+```
+
+Grant the required schema permissions and default privileges:
+
+```sql
+-- Grant schema creation and usage (Required for PostgreSQL 15+)
+GRANT ALL ON SCHEMA public TO <database_user>;
 GRANT CONNECT ON DATABASE <database_name> TO <database_user>;
-GRANT USAGE ON SCHEMA public TO <database_user>;
+GRANT USAGE, CREATE ON SCHEMA public TO <database_user>;
+
+-- Grant DML privileges on existing objects
 GRANT SELECT, INSERT, UPDATE, DELETE ON ALL TABLES IN SCHEMA public TO <database_user>;
 GRANT USAGE, SELECT ON ALL SEQUENCES IN SCHEMA public TO <database_user>;
+
+-- Set default privileges for future tables and sequences
 ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT SELECT, INSERT, UPDATE, DELETE ON TABLES TO <database_user>;
-ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT USAGE, SELECT ON ALL SEQUENCES TO <database_user>;
+ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT USAGE, SELECT ON SEQUENCES TO <database_user>;
 ```
 
-### 3. Run the schema and initial data
+*(Optional alternative: `ALTER SCHEMA public OWNER TO <database_user>;`)*
 
-Connect to the database and apply the schema:
+### 3. Apply Schema and Initial Data
+
+Execute the database migrations and seed files using TCP host binding (`-h 127.0.0.1`) to enforce password authentication:
 
 ```bash
 psql -h 127.0.0.1 -U <database_user> -d <database_name> -f schema.sql
-```
-
-If you want to preload initial data:
-
-```bash
 psql -h 127.0.0.1 -U <database_user> -d <database_name> -f seed.sql
 ```
+
 
 ## 🔥 Redis configuration
 
