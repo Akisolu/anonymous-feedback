@@ -12,7 +12,7 @@ The project allows any unauthenticated user to submit feedback anonymously. The 
 
 ## 🧩 Technologies used
 
-- PHP 8.1+
+- PHP 8.4.1+
 - PostgreSQL 13+
 - Redis 6+
 - Composer
