@@ -70,11 +70,16 @@ This project uses PHP dependencies installed with Composer to support the archit
 Copy `.env.example` to `.env` and complete the values for your environment:
 
 ```env
-DATABASE_NAME=
-DATABASE_USER=
-DATABASE_PASSWORD=
-DATABASE_PORT=
-REDIS_PORT=
+DB_DRIVER=
+DB_HOST=
+DB_PORT=
+DB_DATABASE=
+DB_USERNAME=
+DB_PASSWORD=
+DB_CHARSET=
+DB_SCHEMA=
+
+...
 ```
 ## 🧪 Installation with Docker (Recommended)
 1. Install Composer:

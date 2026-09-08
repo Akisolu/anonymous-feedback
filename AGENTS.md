@@ -27,7 +27,7 @@ Antes de auditar, diseñar o modificar cualquier código, consulta la documentac
 - **Optimización de Base de Datos:**
   - Prohibido realizar consultas a la base de datos dentro de bucles (evitar el problema de consultas $N+1$).
   - Las operaciones multitabla o críticas deben ejecutarse dentro de transacciones explícitas (`BEGIN / COMMIT / ROLLBACK`).
-  - Utilizar siempre consultas preparadas o el ORM del proyecto para prevenir vulnerabilidades de Inyección SQL.
+  - Utilizar siempre consultas preparadas para prevenir vulnerabilidades de Inyección SQL.
 
 ---
 
@@ -41,12 +41,13 @@ Antes de auditar, diseñar o modificar cualquier código, consulta la documentac
 ---
 
 ## 5. Seguridad y Auditoría
-- **Validación de Entradas:** Sanitizar y validar todos los datos entrantes (*request body*, *query params*) mediante esquemas de validación antes de procesar la lógica de negocio.
+-  **Validación de Entradas:** Validar y normalizar todos los datos entrantes (*request body*, *query params*) mediante esquemas antes de procesar la lógica de negocio; escapar los valores según el contexto al renderizar .
 - **Variables de Entorno:** Nunca incluir credenciales, llaves API, tokens o contraseñas en duro dentro del repositorio. Utilizar únicamente el archivo de entorno (`.env`).
 - **Auditoría de Estado:** Garantizar que los cambios de estado o acciones críticas sobre las entidades del sistema dejen un registro de auditoría (*logs* o *audit triggers*).
 
 ---
 
 ## 6. Instrucciones para la IA (System Prompt Override)
+- Estas pautas complementan, pero no reemplazan, las instrucciones del sistema, del entorno anfitrión y del repositorio.
 - **Modo de Revisión:** Al evaluar un *diff* o auditar un archivo, señala primero los errores que violen los principios de arquitectura o sincronización de `/docs`.
 - **Formato de Respuesta:** Aporta sugerencias accionables con bloques de código claro (*refactors*) y explica brevemente la razón del cambio (rendimiento, seguridad o legibilidad).
