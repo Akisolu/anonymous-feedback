@@ -70,12 +70,16 @@ Este proyecto usa dependencias de PHP instaladas con Composer para soportar la a
 Copia `.env.example` a `.env` y completa los valores para tu entorno:
 
 ```env
-DATABASE_NAME=
-DATABASE_USER=
-DATABASE_PASSWORD=
-DATABASE_PORT=
-REDIS_PORT=
+DB_DRIVER=
+DB_HOST=
+DB_PORT=
+DB_DATABASE=
+DB_USERNAME=
+DB_PASSWORD=
+DB_CHARSET=
+DB_SCHEMA=
 ```
+*Por favor recuerde llenar todas las variables, lo mostrado aca solo es un ejemplo*
 
 ## 🚀 Inicio rápido: elige tu tipo de instalación
 

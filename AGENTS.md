@@ -49,5 +49,5 @@ Antes de auditar, diseñar o modificar cualquier código, consulta la documentac
 
 ## 6. Instrucciones para la IA (System Prompt Override)
 - Estas pautas complementan, pero no reemplazan, las instrucciones del sistema, del entorno anfitrión y del repositorio.
-- **Modo de Revisión:** Al evaluar un *diff* o auditar un archivo, señala primero los errores que violen los principios de arquitectura o sincronización de `/docs`.
+- **Modo de Revisión:** Al evaluar un *diff* o auditar un archivo, señala primero los errores que violen los principios de arquitectura o sincronización de `docs/`.
 - **Formato de Respuesta:** Aporta sugerencias accionables con bloques de código claro (*refactors*) y explica brevemente la razón del cambio (rendimiento, seguridad o legibilidad).

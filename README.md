@@ -78,9 +78,8 @@ DB_USERNAME=
 DB_PASSWORD=
 DB_CHARSET=
 DB_SCHEMA=
-
-...
 ```
+*Please remember to fill in all the variables; what is shown here is just an example.*
 ## 🧪 Installation with Docker (Recommended)
 1. Install Composer:
 ```bash
