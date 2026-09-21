@@ -1,43 +1,60 @@
 services:
-  # 1. Database PostgreSQL
   db:
     image: postgres:16-alpine
     container_name: feedback_db
     restart: always
+    env_file:
+      - .env
     environment:
-      POSTGRES_DB: feedback
-      POSTGRES_USER: feedback_user
-      POSTGRES_PASSWORD: password123
+      POSTGRES_DB: ${DB_DATABASE}
+      POSTGRES_USER: ${DB_USERNAME}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
     ports:
-      - "5432:5432"
+      - "${DB_PORT}:5432"
     volumes:
       - pgdata:/var/lib/postgresql/data
-      # Mount the structure and initial data for execution on the first startup
       - ./schema.sql:/docker-entrypoint-initdb.d/1_schema.sql:ro
       - ./seed.sql:/docker-entrypoint-initdb.d/2_seed.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USERNAME} -d ${DB_DATABASE}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
 
-  # 2. Server Redis
   redis:
     image: redis:alpine
     container_name: feedback_redis
     restart: always
     ports:
-      - "6379:6379"
+      - "${REDIS_PORT}:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
 
-  # 3. Server PHP
   app:
     build:
       context: .
       dockerfile: Dockerfile
     container_name: feedback_app
+    restart: always
     ports:
       - "8000:8000"
+    env_file:
+      - .env
     volumes:
-      - .:/var/www/html # sync your local code with the container in real-time
+      - .:/var/www/html
     depends_on:
-      - db
-      - redis
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:8000/ping || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
 
-# Define named volumes for persistent storage
 volumes:
   pgdata:
