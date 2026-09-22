@@ -30,11 +30,11 @@ class RateLimiterTest extends TestCase
 
     public function test_allows_requests_under_limit(): void
     {
-        for ($i = 0; $i < 5; $i++) {
+        for ($i = 0; $i < 9; $i++) {
             $this->rateLimiter->hit($this->testKey, 600);
         }
 
-        $this->assertEquals(5, $this->rateLimiter->attempts($this->testKey));
+        $this->assertEquals(9, $this->rateLimiter->attempts($this->testKey));
         $this->assertFalse($this->rateLimiter->tooManyAttempts($this->testKey, 10));
     }
 

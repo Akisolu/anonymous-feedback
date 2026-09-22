@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Integration;
 
+use PDO;
 use Akisolu\AnonymousFeedback\Repositories\FeedbackRepositoryInterface;
 
 class FeedbackRepositoryTest extends IntegrationTestCase
@@ -13,6 +14,7 @@ class FeedbackRepositoryTest extends IntegrationTestCase
     protected function setUp(): void
     {
         parent::setUp();
+        $this->requireService(PDO::class, 'PostgreSQL');
         $this->repository = $this->container->get(FeedbackRepositoryInterface::class);
     }
 

@@ -6,22 +6,26 @@ namespace Tests\Integration;
 
 use PHPUnit\Framework\TestCase;
 use Psr\Container\ContainerInterface;
-use Throwable;
+use PDOException;
 
 abstract class IntegrationTestCase extends TestCase
 {
     protected ContainerInterface $container;
 
-    protected function setUp(): void
+    protected function loadContainer(): void
     {
-        parent::setUp();
+        $this->container = require __DIR__ . '/../../config/container.php';
+    }
 
+    protected function requireService(string $serviceClass, string $serviceName): void
+    {
         try {
-            $this->container = require __DIR__ . '/../../config/container.php';
-            $this->container->get(\PDO::class);
-        } catch (Throwable $exception) {
+            $this->loadContainer();
+            $this->container->get($serviceClass);
+        } catch (PDOException $exception) {
             $this->markTestSkipped(sprintf(
-                'Integration services are not available: %s',
+                'Required integration service "%s" is not available: %s',
+                $serviceName,
                 $exception->getMessage()
             ));
         }

@@ -13,6 +13,7 @@ class FeedbackMigrationTest extends IntegrationTestCase
     protected function setUp(): void
     {
         parent::setUp();
+        $this->requireService(PDO::class, 'PostgreSQL');
         $this->pdo = $this->container->get(PDO::class);
     }
 

@@ -11,6 +11,12 @@ use Akisolu\AnonymousFeedback\Services\RateLimiter;
 
 class DatabaseConnectionTest extends IntegrationTestCase
 {
+    protected function setUp(): void
+    {
+        parent::setUp();
+        $this->requireService(PDO::class, 'PostgreSQL');
+    }
+
     public function testPdoPostgresConnectionIsSuccessful(): void
     {
         /** @var PDO $pdo */
@@ -35,6 +41,8 @@ class DatabaseConnectionTest extends IntegrationTestCase
 
     public function testRedisConnectionAndOperationsAreSuccessful(): void
     {
+        $this->requireService(RedisClient::class, 'Redis');
+
         /** @var RedisClient $redis */
         $redis = $this->container->get(RedisClient::class);
 
@@ -51,6 +59,8 @@ class DatabaseConnectionTest extends IntegrationTestCase
 
     public function testRateLimiterCanBeResolvedFromContainer(): void
     {
+        $this->requireService(RedisClient::class, 'Redis');
+
         /** @var RateLimiter $rateLimiter */
         $rateLimiter = $this->container->get(RateLimiter::class);
 
