@@ -4,21 +4,17 @@ declare(strict_types=1);
 
 namespace Tests\Integration;
 
-use PHPUnit\Framework\TestCase;
-use Psr\Container\ContainerInterface;
 use PDO;
 use Illuminate\Database\Capsule\Manager as Capsule;
 use Predis\Client as RedisClient;
 use Akisolu\AnonymousFeedback\Services\RateLimiter;
 
-class DatabaseConnectionTest extends TestCase
+class DatabaseConnectionTest extends IntegrationTestCase
 {
-    private ContainerInterface $container;
-
     protected function setUp(): void
     {
         parent::setUp();
-        $this->container = require __DIR__ . '/../../config/container.php';
+        $this->requireService(PDO::class, 'PostgreSQL');
     }
 
     public function testPdoPostgresConnectionIsSuccessful(): void
@@ -27,7 +23,6 @@ class DatabaseConnectionTest extends TestCase
         $pdo = $this->container->get(PDO::class);
 
         $this->assertInstanceOf(PDO::class, $pdo);
-
         $version = $pdo->query('SELECT version()')->fetchColumn();
         $this->assertIsString($version);
         $this->assertStringContainsString('PostgreSQL', $version);
@@ -39,7 +34,6 @@ class DatabaseConnectionTest extends TestCase
         $capsule = $this->container->get(Capsule::class);
 
         $this->assertInstanceOf(Capsule::class, $capsule);
-
         $result = $capsule::select('SELECT 1 as alive');
         $this->assertNotEmpty($result);
         $this->assertEquals(1, $result[0]->alive);
@@ -47,32 +41,30 @@ class DatabaseConnectionTest extends TestCase
 
     public function testRedisConnectionAndOperationsAreSuccessful(): void
     {
+        $this->requireService(RedisClient::class, 'Redis');
+
         /** @var RedisClient $redis */
         $redis = $this->container->get(RedisClient::class);
 
         $this->assertInstanceOf(RedisClient::class, $redis);
-
         $ping = $redis->ping();
         $this->assertTrue($ping == 'PONG' || $ping === true);
 
         $testKey = 'unit_test_key_' . uniqid();
         $redis->set($testKey, 'Hello Redis PHPUnit');
-
         $val = $redis->get($testKey);
         $this->assertEquals('Hello Redis PHPUnit', $val);
-
         $redis->del([$testKey]);
     }
-    
+
     public function testRateLimiterCanBeResolvedFromContainer(): void
-{
-    /** @var \Akisolu\AnonymousFeedback\Services\RateLimiter $rateLimiter */
-    $rateLimiter = $this->container->get(RateLimiter::class);
+    {
+        $this->requireService(RedisClient::class, 'Redis');
 
-    $this->assertInstanceOf(RateLimiter::class, $rateLimiter);
+        /** @var RateLimiter $rateLimiter */
+        $rateLimiter = $this->container->get(RateLimiter::class);
 
-    // Verificación rápida de estado
-    $testKey = 'container_test_key_' . uniqid();
-    $this->assertFalse($rateLimiter->tooManyAttempts($testKey, 5));
-}
+        $this->assertInstanceOf(RateLimiter::class, $rateLimiter);
+        $this->assertFalse($rateLimiter->tooManyAttempts('container_test_key_' . uniqid(), 5));
+    }
 }

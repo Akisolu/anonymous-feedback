@@ -4,21 +4,17 @@ declare(strict_types=1);
 
 namespace Tests\Integration;
 
-use PHPUnit\Framework\TestCase;
-use Psr\Container\ContainerInterface;
+use PDO;
 use Akisolu\AnonymousFeedback\Repositories\FeedbackRepositoryInterface;
 
-class FeedbackRepositoryTest extends TestCase
+class FeedbackRepositoryTest extends IntegrationTestCase
 {
-    private ContainerInterface $container;
     private FeedbackRepositoryInterface $repository;
 
     protected function setUp(): void
     {
         parent::setUp();
-
-        /** @var ContainerInterface $container */
-        $this->container = require __DIR__ . '/../../config/container.php';
+        $this->requireService(PDO::class, 'PostgreSQL');
         $this->repository = $this->container->get(FeedbackRepositoryInterface::class);
     }
 
