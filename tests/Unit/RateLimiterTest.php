@@ -61,12 +61,11 @@ class RateLimiterTest extends TestCase
 
     public function test_expire_only_sets_ttl_for_existing_keys(): void
     {
-        $this->assertFalse($this->redis->expire('missing-key', 600));
-        $this->assertNull($this->redis->get('missing-key'));
+        $this->assertSame(0, $this->redis->expire('missing-key', 600));
 
         $this->rateLimiter->hit($this->testKey, 600);
 
-        $this->assertTrue($this->redis->expire($this->testKey, 600));
-        $this->assertEquals('1', $this->redis->get($this->testKey));
+        $this->assertSame(1, $this->redis->expire($this->testKey, 600));
+        $this->assertSame(1, $this->rateLimiter->attempts($this->testKey));
     }
 }

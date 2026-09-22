@@ -39,18 +39,18 @@ class FakeRedisClient extends Client
         return (string) $this->store[$key];
     }
 
-    public function expire($key, $seconds): bool
+    public function expire($key, $seconds): int
     {
         $key = (string) $key;
         $this->pruneExpiredKeys();
 
         if (!array_key_exists($key, $this->store)) {
-            return false;
+            return 0;
         }
 
         $this->expiresAt[$key] = time() + (int) $seconds;
 
-        return true;
+        return 1;
     }
 
     public function del(...$keys): int
