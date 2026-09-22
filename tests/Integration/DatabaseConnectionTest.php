@@ -9,6 +9,7 @@ use Psr\Container\ContainerInterface;
 use PDO;
 use Illuminate\Database\Capsule\Manager as Capsule;
 use Predis\Client as RedisClient;
+use Akisolu\AnonymousFeedback\Services\RateLimiter;
 
 class DatabaseConnectionTest extends TestCase
 {
@@ -66,9 +67,9 @@ class DatabaseConnectionTest extends TestCase
     public function testRateLimiterCanBeResolvedFromContainer(): void
 {
     /** @var \Akisolu\AnonymousFeedback\Services\RateLimiter $rateLimiter */
-    $rateLimiter = $this->container->get(\Akisolu\AnonymousFeedback\Services\RateLimiter::class);
+    $rateLimiter = $this->container->get(RateLimiter::class);
 
-    $this->assertInstanceOf(\Akisolu\AnonymousFeedback\Services\RateLimiter::class, $rateLimiter);
+    $this->assertInstanceOf(RateLimiter::class, $rateLimiter);
 
     // Verificación rápida de estado
     $testKey = 'container_test_key_' . uniqid();

@@ -8,23 +8,36 @@ use Illuminate\Database\Capsule\Manager as Capsule;
 use Predis\Client as RedisClient;
 
 use Akisolu\AnonymousFeedback\Services\RateLimiter;
+use Akisolu\AnonymousFeedback\Repositories\FeedbackRepositoryInterface;
+use Akisolu\AnonymousFeedback\Repositories\FeedbackRepository;
 
 $config = require __DIR__ . '/config.php';
 
 $builder = new ContainerBuilder();
 $builder->addDefinitions([
     'config' => $config,
+
     PDO::class => function (ContainerInterface $c) {
         $db = $c->get('config')['db'];
-        $dsn = "pgsql:host={$db['host']};port={$db['port']};dbname={$db['database']}";
+        $dsn = sprintf(
+            '%s:host=%s;port=%d;dbname=%s',
+            $db['driver'],
+            $db['host'],
+            $db['port'],
+            $db['database']
+        );
 
-        $options = [
-            PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
-            PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
-            PDO::ATTR_EMULATE_PREPARES   => false,
-        ];
-        return new PDO($dsn, $db['username'], $db['password'], $options);
+        return new PDO(
+            $dsn,
+            $db['username'],
+            $db['password'],
+            [
+                PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+                PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+            ]
+        );
     },
+
     Capsule::class => function (ContainerInterface $c) {
         $capsule = new Capsule();
         $capsule->addConnection($c->get('config')['db']);
@@ -32,11 +45,18 @@ $builder->addDefinitions([
         $capsule->bootEloquent();
         return $capsule;
     },
+
     RedisClient::class => function (ContainerInterface $c) {
         return new RedisClient($c->get('config')['redis']);
     },
+
     RateLimiter::class => function (ContainerInterface $c) {
         return new RateLimiter($c->get(RedisClient::class));
+    },
+
+    FeedbackRepositoryInterface::class => function (ContainerInterface $c) {
+        $c->get(Capsule::class);
+        return new FeedbackRepository();
     },
 ]);
 
