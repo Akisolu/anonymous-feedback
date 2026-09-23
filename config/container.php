@@ -11,7 +11,6 @@ use Akisolu\AnonymousFeedback\Services\RateLimiter;
 use Akisolu\AnonymousFeedback\Repositories\FeedbackRepositoryInterface;
 use Akisolu\AnonymousFeedback\Repositories\FeedbackRepository;
 use Akisolu\AnonymousFeedback\Controllers\FeedbackController;
-use Tests\Integration\FeedbackControllerTest;
 
 $config = require __DIR__ . '/config.php';
 
