@@ -21,8 +21,16 @@ class FeedbackController
         ?int $maxAttempts = null,
         ?int $decaySeconds = null
     ) {
-        $this->maxAttempts = $maxAttempts ?? (int) ($_ENV['RATE_LIMIT_MAX_REQUESTS'] ?? 10);
-        $this->decaySeconds = $decaySeconds ?? (int) ($_ENV['RATE_LIMIT_DECAY'] ?? 600);
+        $this->maxAttempts = $maxAttempts ?? (
+            isset($_ENV['RATE_LIMIT_MAX_REQUESTS']) && $_ENV['RATE_LIMIT_MAX_REQUESTS'] !== ''
+                ? (int) $_ENV['RATE_LIMIT_MAX_REQUESTS']
+                : 10
+        );
+        $this->decaySeconds = $decaySeconds ?? (
+            isset($_ENV['RATE_LIMIT_DECAY']) && $_ENV['RATE_LIMIT_DECAY'] !== ''
+                ? (int) $_ENV['RATE_LIMIT_DECAY']
+                : 600
+        );
     }
 
     public function store(Request $request): JsonResponse
