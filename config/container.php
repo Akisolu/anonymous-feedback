@@ -61,12 +61,11 @@ $builder->addDefinitions([
     },
 
     FeedbackController::class => function (ContainerInterface $c) {
-        $c->get(Capsule::class);
         return new FeedbackController(
             $c->get(FeedbackRepositoryInterface::class),
             $c->get(RateLimiter::class)
-        );
-    },
+       );
+},
 ]);
 
 return $builder->build();
