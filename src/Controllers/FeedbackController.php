@@ -23,12 +23,13 @@ class FeedbackController
     ) {
         $this->maxAttempts = $maxAttempts ?? (
             isset($_ENV['RATE_LIMIT_MAX_REQUESTS']) && $_ENV['RATE_LIMIT_MAX_REQUESTS'] !== ''
-                ? (int) $_ENV['RATE_LIMIT_MAX_REQUESTS']
+                ? max(1, (int) $_ENV['RATE_LIMIT_MAX_REQUESTS'])
                 : 10
         );
+
         $this->decaySeconds = $decaySeconds ?? (
             isset($_ENV['RATE_LIMIT_DECAY']) && $_ENV['RATE_LIMIT_DECAY'] !== ''
-                ? (int) $_ENV['RATE_LIMIT_DECAY']
+                ? max(1, (int) $_ENV['RATE_LIMIT_DECAY'])
                 : 600
         );
     }
@@ -54,6 +55,7 @@ class FeedbackController
                 'error' => 'Invalid feedback message. Must be between 1 and 1000 characters.'
             ], Response::HTTP_UNPROCESSABLE_ENTITY);
         }
+
         $this->rateLimiter->hit($rateLimitKey, $this->decaySeconds);
 
         $feedback = $this->feedbackRepository->create($message);
