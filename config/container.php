@@ -64,8 +64,8 @@ $builder->addDefinitions([
         return new FeedbackController(
             $c->get(FeedbackRepositoryInterface::class),
             $c->get(RateLimiter::class)
-       );
-},
+        );
+    },
 ]);
 
 return $builder->build();
