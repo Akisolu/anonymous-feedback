@@ -16,6 +16,45 @@ class FeedbackControllerTest extends TestCase
     private const MAX_REQUESTS = 10;
     private const DECAY_SECONDS = 600;
 
+    public function testConstructorFallbackBehaviorWithEnvironmentVariables(): void
+{
+    $repositoryMock = $this->createMock(FeedbackRepositoryInterface::class);
+    $rateLimiterMock = $this->createMock(RateLimiter::class);
+
+    $_ENV['RATE_LIMIT_MAX_REQUESTS'] = '';
+    $_ENV['RATE_LIMIT_DECAY'] = '';
+    $controller1 = new FeedbackController($repositoryMock, $rateLimiterMock);
+
+    $rateLimiterMock->expects($this->once())
+        ->method('tooManyAttempts')
+        ->with('feedback_rate_limit:127.0.0.1', 10)
+        ->willReturn(false);
+
+    $request = Request::create('/api/feedbacks', 'POST', [], [], [], ['CONTENT_TYPE' => 'application/json'], json_encode(['message' => 'Test']));
+    $controller1->store($request);
+
+    unset($_ENV['RATE_LIMIT_MAX_REQUESTS'], $_ENV['RATE_LIMIT_DECAY']);
+    $controller2 = new FeedbackController($repositoryMock, $rateLimiterMock);
+
+    $rateLimiterMock->expects($this->once())
+        ->method('tooManyAttempts')
+        ->with('feedback_rate_limit:127.0.0.1', 10)
+        ->willReturn(false);
+
+    $controller2->store($request);
+
+    $_ENV['RATE_LIMIT_MAX_REQUESTS'] = '15';
+    $_ENV['RATE_LIMIT_DECAY'] = '300';
+    $controller3 = new FeedbackController($repositoryMock, $rateLimiterMock);
+
+    $rateLimiterMock->expects($this->once())
+        ->method('tooManyAttempts')
+        ->with('feedback_rate_limit:127.0.0.1', 15)
+        ->willReturn(false);
+
+    $controller3->store($request);
+}
+
     public function testStoreCreatesFeedbackWhenRateLimitIsNotExceeded(): void
     {
         $ip = '127.0.0.1';
