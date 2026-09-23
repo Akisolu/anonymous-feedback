@@ -36,8 +36,10 @@ class FeedbackController
             ], Response::HTTP_TOO_MANY_REQUESTS);
         }
 
-        $data = json_decode($request->getContent(), true) ?? [];
-        $message = trim((string) ($data['message'] ?? ''));
+        $data = json_decode($request->getContent(), true);
+        $message = is_array($data) && is_string($data['message'] ?? null)
+            ? trim($data['message'])
+            : '';
 
         if ($message === '' || mb_strlen($message) > 1000) {
             return new JsonResponse([
