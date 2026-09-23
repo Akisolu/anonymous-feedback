@@ -52,35 +52,38 @@ class FeedbackControllerTest extends TestCase
         $this->assertEquals('Feedback de prueba integración.', $data['data']['message']);
     }
 
-    public function testStoreReturns429WhenRateLimitIsExceeded(): void
-    {
-        $ip = '10.0.0.2';
-        $key = "feedback_rate_limit:{$ip}";
-        $this->rateLimiter->resetAttempts($key);
+   public function testStoreReturns429WhenRateLimitIsExceeded(): void
+{
+    $ip = '10.0.0.2';
+    $key = "feedback_rate_limit:{$ip}";
+    $this->rateLimiter->resetAttempts($key);
 
-        // Forzar límite en Redis
-        for ($i = 0; $i < 10; $i++) {
-            $this->rateLimiter->hit($key);
-        }
+    $maxRequests = (isset($_ENV['RATE_LIMIT_MAX_REQUESTS']) && $_ENV['RATE_LIMIT_MAX_REQUESTS'] !== '')
+        ? max(1, (int) $_ENV['RATE_LIMIT_MAX_REQUESTS'])
+        : 10;
 
-        /** @var FeedbackController $controller */
-        $controller = $this->container->get(FeedbackController::class);
-
-        $payload = json_encode(['message' => 'Debería rebotar por rate limit.']);
-        $request = Request::create(
-            '/api/feedbacks',
-            'POST',
-            [],
-            [],
-            [],
-            ['CONTENT_TYPE' => 'application/json', 'REMOTE_ADDR' => $ip],
-            $payload
-        );
-
-        $response = $controller->store($request);
-
-        $this->assertEquals(Response::HTTP_TOO_MANY_REQUESTS, $response->getStatusCode());
+    for ($i = 0; $i < $maxRequests; $i++) {
+        $this->rateLimiter->hit($key);
     }
+
+    /** @var FeedbackController $controller */
+    $controller = $this->container->get(FeedbackController::class);
+
+    $payload = json_encode(['message' => 'Debería rebotar por rate limit.']);
+    $request = Request::create(
+        '/api/feedbacks',
+        'POST',
+        [],
+        [],
+        [],
+        ['CONTENT_TYPE' => 'application/json', 'REMOTE_ADDR' => $ip],
+        $payload
+    );
+
+    $response = $controller->store($request);
+
+    $this->assertEquals(Response::HTTP_TOO_MANY_REQUESTS, $response->getStatusCode());
+}
 
     public function testStoreReturns422WhenMessageIsEmpty(): void
     {
