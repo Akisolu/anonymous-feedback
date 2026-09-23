@@ -10,6 +10,7 @@ use Predis\Client as RedisClient;
 use Akisolu\AnonymousFeedback\Services\RateLimiter;
 use Akisolu\AnonymousFeedback\Repositories\FeedbackRepositoryInterface;
 use Akisolu\AnonymousFeedback\Repositories\FeedbackRepository;
+use Akisolu\AnonymousFeedback\Controllers\FeedbackController;
 
 $config = require __DIR__ . '/config.php';
 
@@ -57,6 +58,13 @@ $builder->addDefinitions([
     FeedbackRepositoryInterface::class => function (ContainerInterface $c) {
         $c->get(Capsule::class);
         return new FeedbackRepository();
+    },
+
+    FeedbackController::class => function (ContainerInterface $c) {
+        return new FeedbackController(
+            $c->get(FeedbackRepositoryInterface::class),
+            $c->get(RateLimiter::class)
+        );
     },
 ]);
 
